@@ -36,7 +36,9 @@ export default function ChatTab({ initialPrompt, onClearInitialPrompt }: ChatTab
 
   const selectedFile = uploadedFiles[selectedFileIndex];
 
-  const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+  // Use NEXT_PUBLIC_API_URL when provided; default to the platform route so
+  // production (Vercel) and local dev (next dev with rewrite) both work.
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api/backend';
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
