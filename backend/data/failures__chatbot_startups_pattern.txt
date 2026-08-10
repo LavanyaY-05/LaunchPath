@@ -1,0 +1,8 @@
+Common Failure Pattern: Early Chatbot/Customer Support Startups
+
+Before LLMs existed, many chatbot startups (2016-2018 era, rule-based scripted bots) failed because rigid, pre-written responses frustrated users more than they helped.
+
+Lesson for modern LLM-based agents: the rigidity problem is mostly solved by generative AI, but a confident, fluent bot that answers wrong is more dangerous than an obviously robotic one, because users trust it more and catch mistakes less. The safeguard is answering only from verified business documents (RAG-grounded), with a clear escalation path to a human.
+
+Category: Applied AI / SaaS
+Domain: startups

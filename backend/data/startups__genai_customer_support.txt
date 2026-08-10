@@ -1,0 +1,14 @@
+Startup Idea: AI-Powered Customer Support Agent for SMBs
+
+What it is: A GenAI chatbot/agent that small and mid-sized businesses can deploy to handle common customer queries (order status, FAQs, basic troubleshooting) without hiring a full support team, trained on the business's own documents.
+
+Market context: This is one of the most actively funded categories in applied AI right now — dozens of companies (Intercom's Fin, Ada, Decagon, and many smaller players) compete here, which signals real demand, though it also means differentiation matters a lot.
+
+Failed attempt example: Several early chatbot startups (pre-LLM era, e.g. rule-based bots from 2016-2018) failed because rigid, scripted responses frustrated users more than they helped — customers routed around them to reach humans anyway.
+
+Lesson / how to improve: Modern LLM-based agents solve the rigidity problem, but the new risk is over-promising accuracy — a bot that confidently gives wrong information erodes trust faster than a rigid one. Build in clear escalation-to-human paths and only answer from verified business documents (RAG), never free-form generation.
+
+How to approach: Start with one narrow vertical (e.g. only e-commerce order-status queries) rather than "general customer support" — narrow scope proves value faster and is easier to price and demo.
+
+Category: Applied AI / SaaS
+Domain: startups

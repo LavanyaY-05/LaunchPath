@@ -1,0 +1,12 @@
+Skills Needed: AI Customer Support Startup Founder/Builder
+
+Technical: Python, working with LLM APIs (OpenAI, Groq), prompt engineering, RAG pipeline basics (chunking, embeddings, vector search), basic evaluation of AI output quality.
+
+Product: Understanding support workflows (ticket routing, escalation logic, common query patterns), ability to scope MVP tightly to one vertical.
+
+Business: Basic SaaS pricing models (per-seat, per-resolution, flat subscription), pilot-customer sales conversations.
+
+Nice to have: LangChain/LangGraph for orchestration, basic understanding of data privacy since customer support involves sensitive user data.
+
+Category: Skills Reference
+Domain: startups

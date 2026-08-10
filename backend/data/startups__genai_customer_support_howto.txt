@@ -1,0 +1,16 @@
+How to Proceed: Building an AI Customer Support Startup
+
+Step 1 - Validate narrow: Pick ONE vertical (e.g. only e-commerce order-status queries, or only SaaS billing questions) rather than "general customer support."
+
+Step 2 - Build a working prototype: A RAG-based chatbot that answers from a business's own documents (FAQs, policies, product docs) is the core technical deliverable. Prioritize accuracy and escalation-to-human paths.
+
+Step 3 - Find one pilot customer: A single small business willing to test the bot on real customer queries is worth more validation than market research.
+
+Step 4 - Prove a concrete metric: Track a specific before/after number (e.g. "reduced average response time from 4 hours to 2 minutes") — this becomes your strongest sales tool.
+
+Step 5 - Register and seek funding if scaling: Get DPIIT recognition via Startup India portal, then explore SAMRIDH (MeitY) since it specifically targets software product startups.
+
+Step 6 - Iterate on trust: Invest early in confidence thresholds and human handoff — a bot that confidently answers wrong erodes client trust faster than one that says "let me connect you to a person."
+
+Category: Startup Playbook
+Domain: startups
