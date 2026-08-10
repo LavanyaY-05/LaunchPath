@@ -6,14 +6,11 @@
     },
     "backend": {
       "root": "backend",
-      "entrypoint": "main:app"
+      "entrypoint": "main:app",
+      "routePrefix": "/api/backend"
     }
   },
   "rewrites": [
-    {
-      "source": "/api/backend(/.*)?",
-      "destination": { "service": "backend" }
-    },
     {
       "source": "/(.*)",
       "destination": { "service": "frontend" }
