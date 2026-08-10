@@ -6,13 +6,21 @@
     },
     "backend": {
       "root": "backend",
-      "entrypoint": "main:app"
+      "entrypoint": "main:app",
+      "routes": [
+        {
+          "src": "/api/backend/(.*)",
+          "transforms": [
+            { "type": "request.path", "op": "set", "args": "/$1" }
+          ]
+        }
+      ]
     }
   },
   "rewrites": [
     {
       "source": "/api/backend/(.*)",
-      "destination": { "service": "backend", "path": "/$1" }
+      "destination": { "service": "backend" }
     },
     {
       "source": "/(.*)",
