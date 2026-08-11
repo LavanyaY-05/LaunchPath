@@ -175,28 +175,25 @@ from fastapi import FastAPI, File, UploadFile, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
-
+from fastapi import FastAPI, APIRouter, File, UploadFile, HTTPException, Query
 from graph import app_graph
 from retrieval import search
 
-load_dotenv()
+@router.get("/")
+def read_root():
+    ...
 
-app = FastAPI(
-    title="LaunchPath Backend API",
-    description="AI Advisor for Early-Stage Entrepreneurship (FastAPI + LangGraph + Supabase)",
-    version="1.0.0"
-)
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-        "https://launch-path-beryl.vercel.app"
-    ],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+@router.post("/chat", response_model=ChatResponse)
+def chat_endpoint(payload: ChatRequest):
+    ...
+
+@router.get("/explore/{domain}", response_model=ExploreResponse)
+def explore_domain_endpoint(domain: str):
+    ...
+
+@router.post("/upload")
+async def upload_file_endpoint(file: UploadFile = File(...)):
+    ...
 
 
 
@@ -350,3 +347,4 @@ async def upload_file_endpoint(file: UploadFile = File(...)):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to process uploaded file: {str(e)}")
+app.include_router(router)
