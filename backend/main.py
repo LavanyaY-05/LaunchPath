@@ -168,33 +168,220 @@
 #         raise HTTPException(status_code=500, detail=f"Failed to process uploaded file: {str(e)}")
 
 
+# import os
+# import io
+# from typing import Optional, List
+# from fastapi import FastAPI, File, UploadFile, HTTPException, Query
+# from fastapi.middleware.cors import CORSMiddleware
+# from pydantic import BaseModel
+# from dotenv import load_dotenv
+# from fastapi import FastAPI, APIRouter, File, UploadFile, HTTPException, Query
+# from graph import app_graph
+# from retrieval import search
+
+# @router.get("/")
+# def read_root():
+#     ...
+
+# @router.post("/chat", response_model=ChatResponse)
+# def chat_endpoint(payload: ChatRequest):
+#     ...
+
+# @router.get("/explore/{domain}", response_model=ExploreResponse)
+# def explore_domain_endpoint(domain: str):
+#     ...
+
+# @router.post("/upload")
+# async def upload_file_endpoint(file: UploadFile = File(...)):
+#     ...
+
+
+
+# class ChatRequest(BaseModel):
+#     message: str
+#     domain: Optional[str] = None
+#     uploaded_files: Optional[List[dict]] = None
+#     previous_domain: Optional[str] = None
+#     previous_role: Optional[str] = None
+
+
+# class ChatResponse(BaseModel):
+#     answer: str
+#     sources: List[str]
+#     intent: str
+#     follow_ups: List[str]
+#     domain: Optional[str] = None
+#     role: Optional[str] = None
+
+# class ExploreResponse(BaseModel):
+#     answer: str
+#     sources: List[str]
+#     follow_ups: List[str]
+
+
+# @app.get("/")
+# def read_root():
+#     return {"status": "online", "app": "LaunchPath Backend API", "version": "1.0.0"}
+
+
+# @app.post("/chat", response_model=ChatResponse)
+# def chat_endpoint(payload: ChatRequest):
+#     if not payload.message or not payload.message.strip():
+#         raise HTTPException(status_code=400, detail="Message cannot be empty.")
+
+#     uploaded_text = None
+#     if payload.uploaded_files and isinstance(payload.uploaded_files, list):
+#         file_texts = [f.get("extracted_text", "") for f in payload.uploaded_files if isinstance(f, dict) and f.get("extracted_text")]
+#         uploaded_text = "\n\n".join(file_texts).strip() if file_texts else None
+
+#     initial_state = {
+#         "message": payload.message.strip(),
+#         "uploaded_text": uploaded_text,
+#         "uploaded_files": payload.uploaded_files if isinstance(payload.uploaded_files, list) else [],
+#         "domain": payload.domain.strip() if payload.domain else None,
+#         "previous_domain": payload.previous_domain.strip() if payload.previous_domain else None,
+#         "intent": "general_qa",
+#         "retrieved_chunks": [],
+#         "relevance_ok": False,
+#         "answer": "",
+#         "sources": [],
+#         "follow_ups": []
+#     }
+
+#     try:
+#         final_state = app_graph.invoke(initial_state)
+#         return ChatResponse(
+#             answer=final_state.get("answer", "I don't have relevant information on that right now."),
+#             sources=final_state.get("sources", []),
+#             intent=final_state.get("intent", "general_qa"),
+#             follow_ups=final_state.get("follow_ups", []),
+#             domain=final_state.get("domain"),
+#             role=final_state.get("role")
+#         )
+#     except Exception as e:
+#         print(f"[Error in /chat]: {e}")
+#         raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
+
+
+# @app.get("/explore/{domain}", response_model=ExploreResponse)
+# def explore_domain_endpoint(domain: str):
+#     clean_domain = domain.strip().lower()
+
+#     domain_queries = {
+#         "freelancing": "freelancing client approach pricing GenAI developer web developer",
+#         "schemes": "startup india seed fund samridh meity dpiit recognition government schemes",
+#         "investors": "outreach norms private funding alternatives investor expectations pitch deck essentials",
+#         "startups": "genai customer support local delivery logistics startup ideas howto",
+#         "roadmap": "freelance developer roadmap GenAI developer roadmap skills",
+#         "pitch_deck": "what a strong early-stage pitch deck should contain portfolio guidance essentials"
+#     }
+
+#     query = domain_queries.get(clean_domain, f"{clean_domain} guidance roadmap schemes investors")
+
+#     initial_state = {
+#         "message": f"Provide comprehensive structured exploration guide for {clean_domain}",
+#         "uploaded_text": None,
+#         "domain": clean_domain if clean_domain in domain_queries else None,
+#         "previous_domain": None,   # NEW: explicit, explore never carries chat context
+#         "intent": "general_qa",
+#         "retrieved_chunks": [],
+#         "relevance_ok": False,
+#         "answer": "",
+#         "sources": [],
+#         "follow_ups": []
+#     }
+
+#     try:
+#         final_state = app_graph.invoke(initial_state)
+#         return ExploreResponse(
+#             answer=final_state.get("answer", f"No structured guide found for {domain}."),
+#             sources=final_state.get("sources", []),
+#             follow_ups=final_state.get("follow_ups", [])
+#         )
+#     except Exception as e:
+#         print(f"[Error in /explore]: {e}")
+#         raise HTTPException(status_code=500, detail=f"Failed to generate explore content: {str(e)}")
+
+
+# @app.post("/upload")
+# async def upload_file_endpoint(file: UploadFile = File(...)):
+#     contents = await file.read()
+#     if len(contents) > 3 * 1024 * 1024:
+#         raise HTTPException(status_code=400, detail="File size exceeds maximum limit of 3MB.")
+
+#     filename = file.filename or "uploaded_document"
+#     ext = os.path.splitext(filename)[1].lower()
+
+#     extracted_text = ""
+
+#     try:
+#         if ext == ".txt":
+#             extracted_text = contents.decode("utf-8", errors="ignore").strip()
+#         elif ext == ".pdf":
+#             try:
+#                 import pypdf
+#                 reader = pypdf.PdfReader(io.BytesIO(contents))
+#                 pages_text = [p.extract_text() for p in reader.pages if p.extract_text()]
+#                 extracted_text = "\n".join(pages_text).strip()
+#             except Exception as pe:
+#                 raise HTTPException(status_code=400, detail=f"Could not parse PDF file: {pe}")
+#         elif ext in [".docx", ".doc"]:
+#             try:
+#                 import docx
+#                 doc = docx.Document(io.BytesIO(contents))
+#                 paragraphs = [p.text for p in doc.paragraphs if p.text.strip()]
+#                 extracted_text = "\n".join(paragraphs).strip()
+#             except Exception as de:
+#                 raise HTTPException(status_code=400, detail=f"Could not parse DOCX file: {de}")
+#         else:
+#             raise HTTPException(status_code=400, detail="Unsupported file format. Please upload .pdf, .docx, or .txt")
+
+#         if not extracted_text:
+#             raise HTTPException(status_code=400, detail="Extracted text is empty or could not be read.")
+
+#         return {
+#             "extracted_text": extracted_text,
+#             "filename": filename
+#         }
+#     except HTTPException:
+#         raise
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=f"Failed to process uploaded file: {str(e)}")
+# app.include_router(router)
+
+
+
 import os
 import io
 from typing import Optional, List
-from fastapi import FastAPI, File, UploadFile, HTTPException, Query
+from fastapi import FastAPI, APIRouter, File, UploadFile, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
-from fastapi import FastAPI, APIRouter, File, UploadFile, HTTPException, Query
+
 from graph import app_graph
 from retrieval import search
 
-@router.get("/")
-def read_root():
-    ...
+load_dotenv()
 
-@router.post("/chat", response_model=ChatResponse)
-def chat_endpoint(payload: ChatRequest):
-    ...
+app = FastAPI(
+    title="LaunchPath Backend API",
+    description="AI Advisor for Early-Stage Entrepreneurship (FastAPI + LangGraph + Supabase)",
+    version="1.0.0"
+)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "https://launch-path-beryl.vercel.app"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-@router.get("/explore/{domain}", response_model=ExploreResponse)
-def explore_domain_endpoint(domain: str):
-    ...
-
-@router.post("/upload")
-async def upload_file_endpoint(file: UploadFile = File(...)):
-    ...
-
+router = APIRouter(prefix="/api/backend")
 
 
 class ChatRequest(BaseModel):
@@ -213,18 +400,19 @@ class ChatResponse(BaseModel):
     domain: Optional[str] = None
     role: Optional[str] = None
 
+
 class ExploreResponse(BaseModel):
     answer: str
     sources: List[str]
     follow_ups: List[str]
 
 
-@app.get("/")
+@router.get("/")
 def read_root():
     return {"status": "online", "app": "LaunchPath Backend API", "version": "1.0.0"}
 
 
-@app.post("/chat", response_model=ChatResponse)
+@router.post("/chat", response_model=ChatResponse)
 def chat_endpoint(payload: ChatRequest):
     if not payload.message or not payload.message.strip():
         raise HTTPException(status_code=400, detail="Message cannot be empty.")
@@ -263,7 +451,7 @@ def chat_endpoint(payload: ChatRequest):
         raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
 
 
-@app.get("/explore/{domain}", response_model=ExploreResponse)
+@router.get("/explore/{domain}", response_model=ExploreResponse)
 def explore_domain_endpoint(domain: str):
     clean_domain = domain.strip().lower()
 
@@ -282,7 +470,7 @@ def explore_domain_endpoint(domain: str):
         "message": f"Provide comprehensive structured exploration guide for {clean_domain}",
         "uploaded_text": None,
         "domain": clean_domain if clean_domain in domain_queries else None,
-        "previous_domain": None,   # NEW: explicit, explore never carries chat context
+        "previous_domain": None,
         "intent": "general_qa",
         "retrieved_chunks": [],
         "relevance_ok": False,
@@ -303,7 +491,7 @@ def explore_domain_endpoint(domain: str):
         raise HTTPException(status_code=500, detail=f"Failed to generate explore content: {str(e)}")
 
 
-@app.post("/upload")
+@router.post("/upload")
 async def upload_file_endpoint(file: UploadFile = File(...)):
     contents = await file.read()
     if len(contents) > 3 * 1024 * 1024:
@@ -347,4 +535,6 @@ async def upload_file_endpoint(file: UploadFile = File(...)):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to process uploaded file: {str(e)}")
+
+
 app.include_router(router)
